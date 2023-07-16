@@ -11,11 +11,13 @@ import fs from "fs";
 import Path from "path";
 import { readdirRecursive } from "./utils/readdirRecursive";
 import { deletePath } from "./utils/deletePath";
+import { FileStorageConfig } from "./FileStorageConfig";
 
-export default class FileStorage implements Storage {
+export class FileStorage implements Storage {
   private basePath: string;
 
-  constructor({ basePath = "data" }: { basePath: string; tmpPath: string }) {
+  constructor(config: FileStorageConfig) {
+    const { basePath } = FileStorageConfig.parse(config);
     this.basePath = basePath;
     fs.promises.mkdir(basePath, { recursive: true });
   }

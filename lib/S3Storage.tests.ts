@@ -8,21 +8,21 @@ import {
   testDeleteObject,
   testListObjects,
 } from "./Storage.tests";
-import S3Storage from "./S3Storage";
-import { s3 } from "./S3Storage.env";
+import { S3Storage } from "./S3Storage";
+import { s3StorageEnv } from "./S3StorageEnv";
 
 export async function testPutGetFilePathS3Storage() {
-  await testPutGetFilePath(new S3Storage(s3));
+  await testPutGetFilePath(new S3Storage(s3StorageEnv));
 }
 
 export async function testPutGetStreamS3Storage() {
-  await testPutGetStream(new S3Storage(s3));
+  await testPutGetStream(new S3Storage(s3StorageEnv));
 }
 
 export async function testDeleteObjectS3Storage() {
-  await testDeleteObject(new S3Storage(s3));
+  await testDeleteObject(new S3Storage(s3StorageEnv));
 }
 
 export async function testListObjectsS3Storage() {
-  await testListObjects(new S3Storage(s3));
+  await testListObjects(new S3Storage(s3StorageEnv));
 }

@@ -5,10 +5,10 @@
 // ChatGPT
 
 import { Storage } from "./Storage";
-import { expect } from "@jest/globals";
-import fs from "fs";
 import { getStringOfStream } from "./utils/getStringOfStream";
 import makeId from "./utils/makeId";
+import { expect } from "@jest/globals";
+import fs from "fs";
 
 const testPath = "tmp/test";
 

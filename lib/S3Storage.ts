@@ -3,6 +3,11 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { Storage } from "./Storage";
+import { S3StorageConfig } from "./S3StorageConfig";
+import { unique } from "./utils/unique";
+import { catchError } from "./utils/catchError";
+import fs from "fs";
+import path from "path";
 import { Readable } from "stream";
 import {
   S3Client,
@@ -15,25 +20,14 @@ import {
   DeleteBucketCommand,
 } from "@aws-sdk/client-s3";
 
-import { catchError } from "./utils/catchError";
-import fs from "fs";
-import path from "path";
-import { S3StorageEnv } from "./S3Storage.env";
-import { unique } from "./utils/unique";
-
-export default class S3Storage implements Storage {
+export class S3Storage implements Storage {
   private s3;
   private bucket: string;
   private tmpPath: string;
 
-  constructor({
-    bucket,
-    region,
-    accessKeyId,
-    secretAccessKey,
-    endpoint,
-    tmpPath = "tmp",
-  }: S3StorageEnv) {
+  constructor(config: S3StorageConfig) {
+    const { bucket, region, accessKeyId, secretAccessKey, endpoint, tmpPath } =
+      S3StorageConfig.parse(config);
     this.s3 = new S3Client({
       region,
       credentials: {

@@ -9,11 +9,11 @@ import {
   testDeleteObject,
   testListObjects,
 } from "./Storage.tests";
-import FileStorage from "./FileStorage";
-import { fs } from "./FileStorage.env";
+import { FileStorage } from "./FileStorage";
+import { fileStorageEnv } from "./FileStorageEnv";
 
 export async function testFileStorage() {
-  const instance: Storage = new FileStorage(fs);
+  const instance: Storage = new FileStorage(fileStorageEnv);
   await testPutGetFilePath(instance);
   await testPutGetStream(instance);
   await testDeleteObject(instance);
