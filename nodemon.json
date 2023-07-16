@@ -1,0 +1,5 @@
+{
+  "ext": "js,ts",
+  "ignore": ["tmp/**", "build/**", "docs/**", "*.test.*", "**/tests/**"],
+  "delay": 0
+}
