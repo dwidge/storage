@@ -4,11 +4,12 @@
 
 import { FileStorageConfig } from "./FileStorageConfig";
 import { S3StorageConfig } from "./S3StorageConfig";
-import { z } from "zod";
+import z from "zod";
 
 export const StorageConfig = z.object({
-  type: z.enum(["fs", "s3"]),
+  type: z.pipeline(z.string(), z.enum(["fs", "s3"])),
   fs: FileStorageConfig,
   s3: S3StorageConfig,
 });
+export type StorageConfigInput = z.input<typeof StorageConfig>;
 export type StorageConfig = z.infer<typeof StorageConfig>;

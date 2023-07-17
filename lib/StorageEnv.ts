@@ -8,7 +8,7 @@ import { s3StorageEnv } from "./S3StorageEnv";
 const { STORAGE_TYPE = "fs" } = process.env;
 
 export const storageEnv = {
-  type: STORAGE_TYPE as "fs" | "s3",
+  type: STORAGE_TYPE,
   fs: fileStorageEnv,
   s3: s3StorageEnv,
 };
