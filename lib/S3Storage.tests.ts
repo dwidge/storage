@@ -5,6 +5,7 @@
 import {
   testPutGetFilePath,
   testPutGetStream,
+  testPutGetUrl,
   testDeleteObject,
   testListObjects,
 } from "./Storage.tests";
@@ -17,6 +18,10 @@ export async function testPutGetFilePathS3Storage() {
 
 export async function testPutGetStreamS3Storage() {
   await testPutGetStream(new S3Storage(s3StorageEnv));
+}
+
+export async function testPutGetUrlS3Storage() {
+  await testPutGetUrl(new S3Storage(s3StorageEnv));
 }
 
 export async function testDeleteObjectS3Storage() {

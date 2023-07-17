@@ -63,6 +63,10 @@ export class FileStorage implements Storage {
     return fs.createReadStream(fullPath);
   }
 
+  async getUrl(_key: string, _expires: number = Infinity): Promise<string> {
+    throw new Error("getUrlFileStorageE1");
+  }
+
   async delete(key: string) {
     const fullPath = `${this.basePath}/${key}`;
     await deletePath(fullPath).catch((e) => {

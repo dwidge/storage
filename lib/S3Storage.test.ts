@@ -8,9 +8,11 @@ import {
   testListObjectsS3Storage,
   testPutGetFilePathS3Storage,
   testPutGetStreamS3Storage,
+  testPutGetUrlS3Storage,
 } from "./S3Storage.tests";
 
 test("testPutGetFilePathS3Storage", testPutGetFilePathS3Storage, 15000);
 test("testPutGetStreamS3Storage", testPutGetStreamS3Storage);
+test("testPutGetUrlS3Storage", testPutGetUrlS3Storage);
 test("testListObjectsS3Storage", testListObjectsS3Storage);
 test("testDeleteObjectS3Storage", testDeleteObjectS3Storage);

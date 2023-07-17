@@ -5,10 +5,19 @@
 import { Readable } from "stream";
 
 export interface Storage {
-  putFilePath: (key: string, filePath: string) => Promise<void>;
-  putStream: (key: string, stream: Readable) => Promise<void>;
+  putFilePath: (
+    key: string,
+    filePath: string,
+    options?: Partial<{ access: "public-read" | "private" }>
+  ) => Promise<void>;
+  putStream: (
+    key: string,
+    stream: Readable,
+    options?: Partial<{ access: "public-read" | "private" }>
+  ) => Promise<void>;
   getFilePath: (key: string) => Promise<string>;
   getStream: (key: string) => Promise<Readable>;
+  getUrl(key: string, expires?: number): Promise<string>;
   delete: (key: string) => Promise<void>;
   listDir: (keyPrefix: string, limit?: number) => Promise<string[]>;
   listAll: (keyPrefix: string, limit?: number) => Promise<string[]>;

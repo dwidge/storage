@@ -6,6 +6,7 @@ import { Storage } from "./Storage";
 import {
   testPutGetFilePath,
   testPutGetStream,
+  testPutGetUrl,
   testDeleteObject,
   testListObjects,
 } from "./Storage.tests";
@@ -16,6 +17,7 @@ export async function testFileStorage() {
   const instance: Storage = new FileStorage(fileStorageEnv);
   await testPutGetFilePath(instance);
   await testPutGetStream(instance);
+  await testPutGetUrl(instance);
   await testDeleteObject(instance);
   await testListObjects(instance);
 }

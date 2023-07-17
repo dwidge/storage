@@ -41,17 +41,22 @@ export class S3Storage implements Storage {
     this.tmpPath = tmpPath;
   }
 
-  async putFilePath(key: string, filePath: string) {
-    await this.putStream(key, fs.createReadStream(filePath));
+  async putFilePath(
+    key: string,
+    filePath: string,
+    { access = "private" } = {}
+  ) {
+    await this.putStream(key, fs.createReadStream(filePath), { access });
   }
 
-  async putStream(key: string, stream: Readable) {
+  async putStream(key: string, stream: Readable, { access = "private" } = {}) {
     await this.s3
       .send(
         new PutObjectCommand({
           Bucket: this.bucket,
           Key: key,
           Body: stream,
+          ACL: access,
         })
       )
       .catch(catchError("putStreamS3StorageE1"));
@@ -85,6 +90,17 @@ export class S3Storage implements Storage {
   async getStream(key: string): Promise<Readable> {
     const fileName = await this.getFilePath(key);
     return fs.createReadStream(fileName);
+  }
+
+  async getUrl(key: string, _expires: number = Infinity): Promise<string> {
+    const options = this.s3.config;
+    const endpoint = (await options.endpoint?.()) ?? {
+      hostname: `s3.${await options.region()}.amazonaws.com`,
+      protocol: "https:",
+      path: "/",
+    };
+    const bucketUrl = `${endpoint.protocol}//${endpoint.hostname}${endpoint.path}${this.bucket}`;
+    return `${bucketUrl}/${key}`;
   }
 
   async delete(key: string) {

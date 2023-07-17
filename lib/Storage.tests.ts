@@ -9,6 +9,7 @@ import { getStringOfStream } from "./utils/getStringOfStream";
 import makeId from "./utils/makeId";
 import { expect } from "@jest/globals";
 import fs from "fs";
+import axios from "axios";
 
 const testPath = "tmp/test";
 
@@ -53,6 +54,32 @@ export async function testPutGetStream(instance: Storage) {
     expect(await instance.listDir(tmp)).toEqual(["folder"]);
     const stream = await instance.getStream(`${tmp}/folder/c`);
     expect(await getStringOfStream(stream)).toBe("abc");
+  } finally {
+    await instance.delete(`${tmp}/folder/c`);
+
+    await fs.promises.unlink(`${tmp}/test.txt`);
+    await afterEach(tmp);
+  }
+}
+
+export async function testPutGetUrl(instance: Storage) {
+  const tmp = testPath + "/" + makeId();
+  try {
+    await beforeEach(tmp);
+    await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
+
+    const original = fs.createReadStream(`${tmp}/test.txt`);
+    await instance.putStream(`${tmp}/folder/c`, original, {
+      access: "public-read",
+    });
+    expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
+    expect(await instance.listDir(tmp)).toEqual(["folder"]);
+    const url = await instance.getUrl(`${tmp}/folder/c`);
+    expect(url).toMatch("//");
+    const r = await axios.get(url).catch((e) => {
+      throw new Error(e.message, { cause: e.url });
+    });
+    expect(r.data).toBe("abc");
   } finally {
     await instance.delete(`${tmp}/folder/c`);
 
