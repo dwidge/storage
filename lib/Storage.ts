@@ -3,17 +3,18 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { Readable } from "stream";
+import { Access } from "./types/Access.js";
 
 export interface Storage {
   putFilePath: (
     key: string,
     filePath: string,
-    options?: Partial<{ access: "public-read" | "private" }>
+    options?: Partial<{ access: Access }>
   ) => Promise<void>;
   putStream: (
     key: string,
     stream: Readable,
-    options?: Partial<{ access: "public-read" | "private" }>
+    options?: Partial<{ access: Access }>
   ) => Promise<void>;
   getFilePath: (key: string) => Promise<string>;
   getStream: (key: string) => Promise<Readable>;
