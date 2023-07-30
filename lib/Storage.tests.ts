@@ -10,6 +10,7 @@ import makeId from "./utils/makeId.js";
 import { expect } from "@jest/globals";
 import fs from "fs";
 import axios from "axios";
+import { Readable } from "stream";
 
 const testPath = "tmp/test";
 
@@ -48,8 +49,8 @@ export async function testPutGetStream(instance: Storage) {
     await beforeEach(tmp);
     await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
 
-    const original = fs.createReadStream(`${tmp}/test.txt`);
-    await instance.putStream(`${tmp}/folder/c`, original);
+    const original = await fs.promises.readFile(`${tmp}/test.txt`);
+    await instance.putStream(`${tmp}/folder/c`, Readable.from(original));
     expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
     expect(await instance.listDir(tmp)).toEqual(["folder"]);
     const stream = await instance.getStream(`${tmp}/folder/c`);
