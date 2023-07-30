@@ -2,10 +2,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { Storage } from "./Storage";
-import { S3StorageConfig } from "./S3StorageConfig";
-import { unique } from "./utils/unique";
-import { catchError } from "./utils/catchError";
+import { Storage } from "./Storage.js";
+import { S3StorageConfig } from "./S3StorageConfig.js";
+import { unique } from "./utils/unique.js";
+import { catchError } from "./utils/catchError.js";
 import fs from "fs";
 import path from "path";
 import { Readable } from "stream";

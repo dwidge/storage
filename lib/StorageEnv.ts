@@ -2,8 +2,8 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { fileStorageEnv } from "./FileStorageEnv";
-import { s3StorageEnv } from "./S3StorageEnv";
+import { fileStorageEnv } from "./FileStorageEnv.js";
+import { s3StorageEnv } from "./S3StorageEnv.js";
 
 const { STORAGE_TYPE = "fs" } = process.env;
 

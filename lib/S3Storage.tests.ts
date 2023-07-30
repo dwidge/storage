@@ -8,9 +8,9 @@ import {
   testPutGetUrl,
   testDeleteObject,
   testListObjects,
-} from "./Storage.tests";
-import { S3Storage } from "./S3Storage";
-import { s3StorageEnv } from "./S3StorageEnv";
+} from "./Storage.tests.js";
+import { S3Storage } from "./S3Storage.js";
+import { s3StorageEnv } from "./S3StorageEnv.js";
 
 export async function testPutGetFilePathS3Storage() {
   await testPutGetFilePath(new S3Storage(s3StorageEnv));

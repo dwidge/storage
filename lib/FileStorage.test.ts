@@ -3,6 +3,6 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import { test } from "@jest/globals";
-import { testFileStorage } from "./FileStorage.tests";
+import { testFileStorage } from "./FileStorage.tests.js";
 
 test("testFileStorage", testFileStorage, 15000);

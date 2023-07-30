@@ -1,0 +1,7 @@
+{
+  "preset": "ts-jest",
+  "testTimeout": 10000,
+  "moduleNameMapper": {
+    "(.+)\\.js": "$1"
+  }
+}

@@ -4,9 +4,9 @@
 
 // ChatGPT
 
-import { Storage } from "./Storage";
-import { getStringOfStream } from "./utils/getStringOfStream";
-import makeId from "./utils/makeId";
+import { Storage } from "./Storage.js";
+import { getStringOfStream } from "./utils/getStringOfStream.js";
+import makeId from "./utils/makeId.js";
 import { expect } from "@jest/globals";
 import fs from "fs";
 import axios from "axios";

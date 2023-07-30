@@ -2,8 +2,8 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { FileStorageConfig } from "./FileStorageConfig";
-import { S3StorageConfig } from "./S3StorageConfig";
+import { FileStorageConfig } from "./FileStorageConfig.js";
+import { S3StorageConfig } from "./S3StorageConfig.js";
 import z from "zod";
 
 export const StorageConfig = z.object({

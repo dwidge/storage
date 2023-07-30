@@ -4,14 +4,14 @@
 
 // ChatGPT
 
-import { Storage } from "./Storage";
+import { Storage } from "./Storage.js";
 import { Readable } from "stream";
-import { catchError } from "./utils/catchError";
+import { catchError } from "./utils/catchError.js";
 import fs from "fs";
 import Path from "path";
-import { readdirRecursive } from "./utils/readdirRecursive";
-import { deletePath } from "./utils/deletePath";
-import { FileStorageConfig } from "./FileStorageConfig";
+import { readdirRecursive } from "./utils/readdirRecursive.js";
+import { deletePath } from "./utils/deletePath.js";
+import { FileStorageConfig } from "./FileStorageConfig.js";
 
 export class FileStorage implements Storage {
   private basePath: string;

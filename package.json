@@ -5,11 +5,11 @@
   "keywords": [],
   "author": "DWJ",
   "license": "BSL-1.0",
-  "main": "build/index.js",
+  "type": "module",
   "exports": {
-    ".": "./lib/index.ts",
-    "./*": "./lib/*.ts",
-    "./components/*": "./lib/components/*.tsx",
+    ".": "./lib/index.js",
+    "./*": "./lib/*.js",
+    "./components/*": "./lib/components/*.jsx",
     "./styles/*": "./lib/styles/*.css"
   },
   "files": [

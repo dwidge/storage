@@ -3,7 +3,7 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 import S3 from "aws-sdk/clients/s3";
-import { catchError } from "./catchError";
+import { catchError } from "./catchError.js";
 
 //stackoverflow.com/a/49888947
 export async function* getMoreKeys(

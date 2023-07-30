@@ -2,10 +2,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { Storage } from "./Storage";
-import { FileStorage } from "./FileStorage";
-import { S3Storage } from "./S3Storage";
-import { StorageConfig, StorageConfigInput } from "./StorageConfig";
+import { Storage } from "./Storage.js";
+import { FileStorage } from "./FileStorage.js";
+import { S3Storage } from "./S3Storage.js";
+import { StorageConfig, StorageConfigInput } from "./StorageConfig.js";
 
 export const createStorage = (config: StorageConfigInput): Storage =>
   ({

@@ -9,7 +9,7 @@ import {
   testPutGetFilePathS3Storage,
   testPutGetStreamS3Storage,
   testPutGetUrlS3Storage,
-} from "./S3Storage.tests";
+} from "./S3Storage.tests.js";
 
 test("testPutGetFilePathS3Storage", testPutGetFilePathS3Storage, 15000);
 test("testPutGetStreamS3Storage", testPutGetStreamS3Storage);

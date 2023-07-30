@@ -2,16 +2,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { Storage } from "./Storage";
+import { Storage } from "./Storage.js";
 import {
   testPutGetFilePath,
   testPutGetStream,
   testPutGetUrl,
   testDeleteObject,
   testListObjects,
-} from "./Storage.tests";
-import { FileStorage } from "./FileStorage";
-import { fileStorageEnv } from "./FileStorageEnv";
+} from "./Storage.tests.js";
+import { FileStorage } from "./FileStorage.js";
+import { fileStorageEnv } from "./FileStorageEnv.js";
 
 export async function testFileStorage() {
   const instance: Storage = new FileStorage(fileStorageEnv);
