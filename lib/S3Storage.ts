@@ -19,6 +19,7 @@ import {
   BucketAlreadyExists,
   DeleteBucketCommand,
 } from "@aws-sdk/client-s3";
+import { getBufferOfStream } from "./utils/getBufferOfStream.js";
 
 export class S3Storage implements Storage {
   private s3;
@@ -55,7 +56,7 @@ export class S3Storage implements Storage {
         new PutObjectCommand({
           Bucket: this.bucket,
           Key: key,
-          Body: stream,
+          Body: await getBufferOfStream(stream),
           ACL: access,
         })
       )
