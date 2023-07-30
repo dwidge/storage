@@ -16,8 +16,14 @@ export interface Storage {
     stream: Readable,
     options?: Partial<{ access: Access }>
   ) => Promise<void>;
+  putBuffer: (
+    key: string,
+    buffer: Buffer,
+    options?: Partial<{ access: Access }>
+  ) => Promise<void>;
   getFilePath: (key: string) => Promise<string>;
   getStream: (key: string) => Promise<Readable>;
+  getBuffer: (key: string) => Promise<Buffer>;
   getUrl(key: string, expires?: number): Promise<string>;
   delete: (key: string) => Promise<void>;
   listDir: (keyPrefix: string, limit?: number) => Promise<string[]>;

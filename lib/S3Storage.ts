@@ -63,6 +63,19 @@ export class S3Storage implements Storage {
       .catch(catchError("putStreamS3StorageE1"));
   }
 
+  async putBuffer(key: string, buffer: Buffer, { access = "private" } = {}) {
+    await this.s3
+      .send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+          Body: buffer,
+          ACL: access,
+        })
+      )
+      .catch(catchError("putBufferS3StorageE1"));
+  }
+
   async getFilePath(key: string) {
     const { Body } = await this.s3
       .send(
@@ -91,6 +104,11 @@ export class S3Storage implements Storage {
   async getStream(key: string): Promise<Readable> {
     const fileName = await this.getFilePath(key);
     return fs.createReadStream(fileName);
+  }
+
+  async getBuffer(key: string): Promise<Buffer> {
+    const fileName = await this.getFilePath(key);
+    return fs.promises.readFile(fileName);
   }
 
   async getUrl(key: string, _expires: number = Infinity): Promise<string> {

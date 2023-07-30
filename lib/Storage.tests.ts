@@ -63,6 +63,26 @@ export async function testPutGetStream(instance: Storage) {
   }
 }
 
+export async function testPutGetBuffer(instance: Storage) {
+  const tmp = testPath + "/" + makeId();
+  try {
+    await beforeEach(tmp);
+    await fs.promises.writeFile(`${tmp}/test.txt`, "abc", { encoding: "utf8" });
+
+    const original = await fs.promises.readFile(`${tmp}/test.txt`);
+    await instance.putBuffer(`${tmp}/folder/c`, original);
+    expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
+    expect(await instance.listDir(tmp)).toEqual(["folder"]);
+    const restored = await instance.getBuffer(`${tmp}/folder/c`);
+    expect(restored.toString("utf8")).toBe("abc");
+  } finally {
+    await instance.delete(`${tmp}/folder/c`);
+
+    await fs.promises.unlink(`${tmp}/test.txt`);
+    await afterEach(tmp);
+  }
+}
+
 export async function testPutGetUrl(instance: Storage) {
   const tmp = testPath + "/" + makeId();
   try {

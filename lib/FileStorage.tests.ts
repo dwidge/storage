@@ -6,6 +6,7 @@ import { Storage } from "./Storage.js";
 import {
   testPutGetFilePath,
   testPutGetStream,
+  testPutGetBuffer,
   testPutGetUrl,
   testDeleteObject,
   testListObjects,
@@ -17,6 +18,7 @@ export async function testFileStorage() {
   const instance: Storage = new FileStorage(fileStorageEnv);
   await testPutGetFilePath(instance);
   await testPutGetStream(instance);
+  await testPutGetBuffer(instance);
   await testPutGetUrl(instance);
   await testDeleteObject(instance);
   await testListObjects(instance);

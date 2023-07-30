@@ -47,6 +47,16 @@ export class FileStorage implements Storage {
     });
   }
 
+  async putBuffer(key: string, buffer: Buffer) {
+    const fullPath = `${this.basePath}/${key}`;
+    await fs.promises
+      .mkdir(Path.dirname(fullPath), { recursive: true })
+      .catch(catchError("putBufferFileStorageE1"));
+    await fs.promises
+      .writeFile(fullPath, buffer)
+      .catch(catchError("putBufferFileStorageE2"));
+  }
+
   async getFilePath(key: string) {
     const fullPath = `${this.basePath}/${key}`;
     await fs.promises
@@ -61,6 +71,11 @@ export class FileStorage implements Storage {
       .access(fullPath, fs.constants.R_OK)
       .catch(catchError("getStreamFileStorageE1"));
     return fs.createReadStream(fullPath);
+  }
+
+  async getBuffer(key: string): Promise<Buffer> {
+    const fullPath = `${this.basePath}/${key}`;
+    return fs.promises.readFile(fullPath);
   }
 
   async getUrl(_key: string, _expires: number = Infinity): Promise<string> {
