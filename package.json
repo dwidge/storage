@@ -7,9 +7,9 @@
   "license": "BSL-1.0",
   "type": "module",
   "exports": {
-    ".": "./lib/index.js",
-    "./*": "./lib/*.js",
-    "./components/*": "./lib/components/*.jsx",
+    ".": "./lib/index.ts",
+    "./*": "./lib/*.ts",
+    "./components/*": "./lib/components/*.tsx",
     "./styles/*": "./lib/styles/*.css"
   },
   "files": [
