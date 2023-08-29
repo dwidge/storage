@@ -71,6 +71,7 @@ export async function testPutGetBuffer(instance: Storage) {
 
     const original = await fs.promises.readFile(`${tmp}/test.txt`);
     await instance.putBuffer(`${tmp}/folder/c`, original);
+    expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
     expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
     expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
     const restored = await instance.getBuffer(`${tmp}/folder/c`);
@@ -93,6 +94,7 @@ export async function testPutGetUrl(instance: Storage) {
     await instance.putStream(`${tmp}/folder/c`, original, {
       access: "public-read",
     });
+    expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
     expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
     expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
     const url = await instance.getUrl(`${tmp}/folder/c`);
