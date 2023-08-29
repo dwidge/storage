@@ -9,6 +9,7 @@ import { Readable } from "stream";
 import { catchError } from "./utils/catchError.js";
 import fs from "fs";
 import Path from "path";
+import Url from "url";
 import { readdirRecursive } from "./utils/readdirRecursive.js";
 import { deletePath } from "./utils/deletePath.js";
 import { FileStorageConfig } from "./FileStorageConfig.js";
@@ -78,8 +79,10 @@ export class FileStorage implements Storage {
     return fs.promises.readFile(fullPath);
   }
 
-  async getUrl(_key: string, _expires: number = Infinity): Promise<string> {
-    throw new Error("getUrlFileStorageE1");
+  async getUrl(key: string, _expires: number = Infinity): Promise<string> {
+    const fullPath = `${this.basePath}/${key}`;
+    const urlPath = Url.pathToFileURL(fullPath);
+    return urlPath.toString();
   }
 
   async delete(key: string) {
