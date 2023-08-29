@@ -139,7 +139,7 @@ export class S3Storage implements Storage {
   }
 
   async listAll(keyPrefix: string, limit?: number) {
-    const Prefix = keyPrefix.endsWith("/") ? keyPrefix : keyPrefix + "/";
+    const Prefix = keyPrefix;
     const listObjectsCommand = new ListObjectsV2Command({
       Bucket: this.bucket,
       Prefix,

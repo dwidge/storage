@@ -29,8 +29,8 @@ export async function testPutGetFilePath(instance: Storage) {
     await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
 
     await instance.putFilePath(`${tmp}/folder/c`, `${tmp}/test.txt`);
-    expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
-    expect(await instance.listDir(tmp)).toEqual(["folder"]);
+    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
     const content = await fs.promises.readFile(
       await instance.getFilePath(`${tmp}/folder/c`)
     );
@@ -51,8 +51,8 @@ export async function testPutGetStream(instance: Storage) {
 
     const original = await fs.promises.readFile(`${tmp}/test.txt`);
     await instance.putStream(`${tmp}/folder/c`, Readable.from(original));
-    expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
-    expect(await instance.listDir(tmp)).toEqual(["folder"]);
+    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
     const stream = await instance.getStream(`${tmp}/folder/c`);
     expect(await getStringOfStream(stream)).toBe("abc");
   } finally {
@@ -71,8 +71,8 @@ export async function testPutGetBuffer(instance: Storage) {
 
     const original = await fs.promises.readFile(`${tmp}/test.txt`);
     await instance.putBuffer(`${tmp}/folder/c`, original);
-    expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
-    expect(await instance.listDir(tmp)).toEqual(["folder"]);
+    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
     const restored = await instance.getBuffer(`${tmp}/folder/c`);
     expect(restored.toString("utf8")).toBe("abc");
   } finally {
@@ -93,8 +93,8 @@ export async function testPutGetUrl(instance: Storage) {
     await instance.putStream(`${tmp}/folder/c`, original, {
       access: "public-read",
     });
-    expect(await instance.listAll(tmp)).toEqual(["folder/c"]);
-    expect(await instance.listDir(tmp)).toEqual(["folder"]);
+    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
     const url = await instance.getUrl(`${tmp}/folder/c`);
     expect(url).toMatch("//");
     const r = await axios.get(url).catch((e) => {
@@ -119,8 +119,8 @@ export async function testDeleteObject(instance: Storage) {
       fs.createReadStream(`${tmp}/test.txt`)
     );
     await instance.delete(`${tmp}/folder/c`);
-    expect(await instance.listAll(tmp)).toEqual([]);
-    expect(await instance.listDir(tmp)).toEqual([]);
+    expect(await instance.listAll(`${tmp}/`)).toEqual([]);
+    expect(await instance.listDir(`${tmp}/`)).toEqual([]);
     await expect(instance.getStream(`${tmp}/folder/c`)).rejects.toThrow(Error);
     await instance.delete(`${tmp}/folder/c`);
   } finally {
@@ -133,8 +133,8 @@ export async function testListObjects(instance: Storage) {
   const tmp = testPath + "/" + makeId();
   try {
     await beforeEach(tmp);
-    expect(await instance.listAll(tmp)).toEqual([]);
-    expect(await instance.listDir(tmp)).toEqual([]);
+    expect(await instance.listAll(`${tmp}/`)).toEqual([]);
+    expect(await instance.listDir(`${tmp}/`)).toEqual([]);
   } finally {
     await afterEach(tmp);
   }
