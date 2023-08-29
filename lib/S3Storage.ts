@@ -15,7 +15,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
   CreateBucketCommand,
-  ListObjectsV2Command,
+  ListObjectsCommand,
   BucketAlreadyExists,
   DeleteBucketCommand,
 } from "@aws-sdk/client-s3";
@@ -138,20 +138,40 @@ export class S3Storage implements Storage {
     return unique(list.map((s) => s.split("/")[0]));
   }
 
-  async listAll(keyPrefix: string, limit?: number) {
-    const Prefix = keyPrefix;
-    const listObjectsCommand = new ListObjectsV2Command({
-      Bucket: this.bucket,
-      Prefix,
-      MaxKeys: limit,
-    });
+  async listAll(prefix: string, limit?: number) {
+    const keys: string[] = [];
+    for await (const key of this.listEach(prefix, limit)) {
+      keys.push(key);
+    }
+    return keys;
+  }
 
-    const response = await this.s3
-      .send(listObjectsCommand)
-      .catch(catchError("listObjectsS3StorageE1"));
-    return (
-      response.Contents?.map(({ Key }) => Key?.slice(Prefix.length) ?? "") ?? []
-    );
+  async *listEach(prefix: string, limit: number = 1000) {
+    let marker: string | undefined = undefined;
+
+    while (true) {
+      const listObjectsCommand: ListObjectsCommand = new ListObjectsCommand({
+        Bucket: this.bucket,
+        Prefix: prefix,
+        MaxKeys: limit,
+        Marker: marker,
+        // StartAfter: marker,
+      });
+
+      const response = await this.s3
+        .send(listObjectsCommand)
+        .catch(catchError("listEachS3StorageE1"));
+
+      const contents = response.Contents ?? [];
+      for (const { Key } of contents) {
+        if (limit-- <= 0) return;
+        yield Key?.slice(prefix.length) ?? "";
+      }
+
+      if (!response.IsTruncated) break;
+
+      marker = response.NextMarker;
+    }
   }
 
   async create() {
