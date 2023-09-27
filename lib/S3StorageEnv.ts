@@ -3,19 +3,19 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 const {
-  S3_BUCKET = "",
-  S3_REGION = "",
-  S3_KEY_ID = "",
-  S3_KEY_SECRET = "",
-  S3_ENDPOINT = "",
-  S3_TMP_PATH = "tmp",
+  STORAGE_S3_BUCKET = "",
+  STORAGE_S3_REGION = "",
+  STORAGE_S3_KEY_ID = "",
+  STORAGE_S3_KEY_SECRET = "",
+  STORAGE_S3_ENDPOINT = "",
+  STORAGE_S3_TMP_PATH = "tmp",
 } = process.env;
 
 export const s3StorageEnv = {
-  bucket: S3_BUCKET,
-  region: S3_REGION,
-  accessKeyId: S3_KEY_ID,
-  secretAccessKey: S3_KEY_SECRET,
-  endpoint: S3_ENDPOINT,
-  tmpPath: S3_TMP_PATH,
+  bucket: STORAGE_S3_BUCKET,
+  region: STORAGE_S3_REGION,
+  accessKeyId: STORAGE_S3_KEY_ID,
+  secretAccessKey: STORAGE_S3_KEY_SECRET,
+  endpoint: STORAGE_S3_ENDPOINT,
+  tmpPath: STORAGE_S3_TMP_PATH,
 };

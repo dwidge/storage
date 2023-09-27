@@ -8,8 +8,8 @@ import z from "zod";
 
 export const StorageConfig = z.object({
   type: z.pipeline(z.string(), z.enum(["fs", "s3"])),
-  fs: FileStorageConfig,
-  s3: S3StorageConfig,
+  fs: FileStorageConfig.optional(),
+  s3: S3StorageConfig.optional(),
 });
 export type StorageConfigInput = z.input<typeof StorageConfig>;
 export type StorageConfig = z.infer<typeof StorageConfig>;

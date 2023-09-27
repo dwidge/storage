@@ -9,6 +9,6 @@ const { STORAGE_TYPE = "fs" } = process.env;
 
 export const storageEnv = {
   type: STORAGE_TYPE,
-  fs: fileStorageEnv,
-  s3: s3StorageEnv,
+  fs: STORAGE_TYPE === "fs" ? fileStorageEnv : undefined,
+  s3: STORAGE_TYPE === "s3" ? s3StorageEnv : undefined,
 };
