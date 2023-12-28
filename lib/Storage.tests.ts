@@ -12,132 +12,122 @@ import fs from "fs";
 import axios from "axios";
 import { Readable } from "stream";
 
-const testPath = "tmp/test";
+const testKeyBase = "tmp/test";
+const testTmpDir = "tmp/setup";
 
-async function beforeEach(tmp: string) {
-  await fs.promises.mkdir(tmp, { recursive: true });
-}
-
-async function afterEach(tmp: string) {
-  await fs.promises.rm(tmp, { recursive: true });
-}
+const withTempDir = async (dir: string, f: (dir: string) => Promise<void>) => {
+  await fs.promises.mkdir(dir, { recursive: true });
+  return f(dir).finally(() => fs.promises.rm(dir, { recursive: true }));
+};
 
 export async function testPutGetFilePath(instance: Storage) {
-  const tmp = testPath + "/" + makeId();
-  try {
-    await beforeEach(tmp);
-    await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
-
-    await instance.putFilePath(`${tmp}/folder/c`, `${tmp}/test.txt`);
-    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
-    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
-    const content = await fs.promises.readFile(
-      await instance.getFilePath(`${tmp}/folder/c`)
-    );
-    expect(content.toString()).toBe("abc");
-  } finally {
-    await instance.delete(`${tmp}/folder/c`);
-
-    await fs.promises.unlink(`${tmp}/test.txt`);
-    await afterEach(tmp);
-  }
+  await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
+    const tmp = testKeyBase + "/testPutGetFilePath" + makeId();
+    try {
+      await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc");
+      await instance.putFilePath(`${tmp}/folder/c`, `${testTmpDir}/test.txt`);
+      expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+      expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
+      const filePath = await instance.getFilePath(`${tmp}/folder/c`);
+      const content = await fs.promises.readFile(filePath);
+      await fs.promises.unlink(filePath);
+      expect(content.toString()).toBe("abc");
+    } finally {
+      await instance.delete(`${tmp}/folder/c`);
+    }
+  });
 }
 
 export async function testPutGetStream(instance: Storage) {
-  const tmp = testPath + "/" + makeId();
-  try {
-    await beforeEach(tmp);
-    await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
-
-    const original = await fs.promises.readFile(`${tmp}/test.txt`);
-    await instance.putStream(`${tmp}/folder/c`, Readable.from(original));
-    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
-    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
-    const stream = await instance.getStream(`${tmp}/folder/c`);
-    expect(await getStringOfStream(stream)).toBe("abc");
-  } finally {
-    await instance.delete(`${tmp}/folder/c`);
-
-    await fs.promises.unlink(`${tmp}/test.txt`);
-    await afterEach(tmp);
-  }
+  await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
+    const tmp = testKeyBase + "/testPutGetStream" + makeId();
+    try {
+      await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc");
+      const original = await fs.promises.readFile(`${testTmpDir}/test.txt`);
+      await instance.putStream(`${tmp}/folder/c`, Readable.from(original));
+      expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+      expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
+      const stream = await instance.getStream(`${tmp}/folder/c`);
+      expect(await getStringOfStream(stream)).toBe("abc");
+    } finally {
+      await instance.delete(`${tmp}/folder/c`);
+    }
+  });
 }
 
 export async function testPutGetBuffer(instance: Storage) {
-  const tmp = testPath + "/" + makeId();
-  try {
-    await beforeEach(tmp);
-    await fs.promises.writeFile(`${tmp}/test.txt`, "abc", { encoding: "utf8" });
-
-    const original = await fs.promises.readFile(`${tmp}/test.txt`);
-    await instance.putBuffer(`${tmp}/folder/c`, original);
-    expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
-    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
-    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
-    const restored = await instance.getBuffer(`${tmp}/folder/c`);
-    expect(restored.toString("utf8")).toBe("abc");
-  } finally {
-    await instance.delete(`${tmp}/folder/c`);
-
-    await fs.promises.unlink(`${tmp}/test.txt`);
-    await afterEach(tmp);
-  }
+  await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
+    const tmp = testKeyBase + "/testPutGetBuffer" + makeId();
+    try {
+      await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc", {
+        encoding: "utf8",
+      });
+      const original = await fs.promises.readFile(`${testTmpDir}/test.txt`);
+      await instance.putBuffer(`${tmp}/folder/c`, original);
+      expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
+      expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+      expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
+      const restored = await instance.getBuffer(`${tmp}/folder/c`);
+      expect(restored.toString("utf8")).toBe("abc");
+    } finally {
+      await instance.delete(`${tmp}/folder/c`);
+    }
+  });
 }
 
 export async function testPutGetUrl(instance: Storage) {
-  const tmp = testPath + "/" + makeId();
-  try {
-    await beforeEach(tmp);
-    await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
+  await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
+    const tmp = testKeyBase + "/testPutGetUrl" + makeId();
+    try {
+      await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc");
 
-    const original = fs.createReadStream(`${tmp}/test.txt`);
-    await instance.putStream(`${tmp}/folder/c`, original, {
-      access: "public-read",
-    });
-    expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
-    expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
-    expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
-    const url = await instance.getUrl(`${tmp}/folder/c`);
-    expect(url).toMatch("//");
-    const r = await axios.get(url).catch((e) => {
-      throw new Error(e.message, { cause: e.url });
-    });
-    expect(r.data).toBe("abc");
-  } finally {
-    await instance.delete(`${tmp}/folder/c`);
-
-    await fs.promises.unlink(`${tmp}/test.txt`);
-    await afterEach(tmp);
-  }
+      const original = fs.createReadStream(`${testTmpDir}/test.txt`);
+      await instance.putStream(`${tmp}/folder/c`, original, {
+        access: "public-read",
+      });
+      expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
+      expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
+      expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
+      const url = await instance.getUrl(`${tmp}/folder/c`);
+      expect(url).toMatch("//");
+      const r = await axios.get(url).catch((e) => {
+        throw new Error("testPutGetUrlE1: " + e.message, { cause: e.url });
+      });
+      expect(r.data).toBe("abc");
+    } finally {
+      await instance.delete(`${tmp}/folder/c`);
+    }
+  });
 }
 
 export async function testDeleteObject(instance: Storage) {
-  const tmp = testPath + "/" + makeId();
-  try {
-    await beforeEach(tmp);
-    await fs.promises.writeFile(`${tmp}/test.txt`, "abc");
-    await instance.putStream(
-      `${tmp}/folder/c`,
-      fs.createReadStream(`${tmp}/test.txt`)
-    );
-    await instance.delete(`${tmp}/folder/c`);
-    expect(await instance.listAll(`${tmp}/`)).toEqual([]);
-    expect(await instance.listDir(`${tmp}/`)).toEqual([]);
-    await expect(instance.getStream(`${tmp}/folder/c`)).rejects.toThrow(Error);
-    await instance.delete(`${tmp}/folder/c`);
-  } finally {
-    await fs.promises.unlink(`${tmp}/test.txt`);
-    await afterEach(tmp);
-  }
+  await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
+    const tmp = testKeyBase + "/testDeleteObject" + makeId();
+    try {
+      await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc");
+      await instance.putStream(
+        `${tmp}/folder/c`,
+        fs.createReadStream(`${testTmpDir}/test.txt`)
+      );
+      await instance.delete(`${tmp}/folder/c`);
+      expect(await instance.listAll(`${tmp}/`)).toEqual([]);
+      expect(await instance.listDir(`${tmp}/`)).toEqual([]);
+      await expect(instance.getStream(`${tmp}/folder/c`)).rejects.toThrow(
+        Error
+      );
+    } finally {
+      await instance.delete(`${tmp}/folder/c`);
+    }
+  });
 }
 
 export async function testListObjects(instance: Storage) {
-  const tmp = testPath + "/" + makeId();
-  try {
-    await beforeEach(tmp);
-    expect(await instance.listAll(`${tmp}/`)).toEqual([]);
-    expect(await instance.listDir(`${tmp}/`)).toEqual([]);
-  } finally {
-    await afterEach(tmp);
-  }
+  await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
+    const tmp = testKeyBase + "/testListObjects" + makeId();
+    try {
+      expect(await instance.listAll(`${tmp}/`)).toEqual([]);
+      expect(await instance.listDir(`${tmp}/`)).toEqual([]);
+    } finally {
+    }
+  });
 }
