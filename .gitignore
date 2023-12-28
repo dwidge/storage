@@ -4,4 +4,4 @@
 /tmp
 /*lock*
 /*log*
-.env*
+*.local
