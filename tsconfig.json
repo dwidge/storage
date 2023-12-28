@@ -3,7 +3,7 @@
     "esModuleInterop": true,
     "checkJs": true,
     "jsx": "react",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
