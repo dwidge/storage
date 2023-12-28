@@ -15,16 +15,15 @@ import { deletePath } from "./utils/deletePath.js";
 import { FileStorageConfig } from "./FileStorageConfig.js";
 
 export class FileStorage implements Storage {
-  private basePath: string;
+  private config: FileStorageConfig;
 
   constructor(config: FileStorageConfig) {
-    const { basePath } = FileStorageConfig.parse(config);
-    this.basePath = basePath;
-    fs.promises.mkdir(basePath, { recursive: true });
+    this.config = FileStorageConfig.parse(config);
+    fs.promises.mkdir(this.config.basePath, { recursive: true });
   }
 
   async putFilePath(key: string, filePath: string) {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises
       .mkdir(Path.dirname(fullPath), { recursive: true })
       .catch(catchError("putFilePathFileStorageE1"));
@@ -34,7 +33,7 @@ export class FileStorage implements Storage {
   }
 
   async putStream(key: string, stream: Readable) {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises
       .mkdir(Path.dirname(fullPath), { recursive: true })
       .catch(catchError("putStreamFileStorageE1"));
@@ -49,7 +48,7 @@ export class FileStorage implements Storage {
   }
 
   async putBuffer(key: string, buffer: Buffer) {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises
       .mkdir(Path.dirname(fullPath), { recursive: true })
       .catch(catchError("putBufferFileStorageE1"));
@@ -59,7 +58,7 @@ export class FileStorage implements Storage {
   }
 
   async getFilePath(key: string) {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises
       .access(fullPath, fs.constants.F_OK)
       .catch(catchError("getFilePathFileStorageE1"));
@@ -67,7 +66,7 @@ export class FileStorage implements Storage {
   }
 
   async getStream(key: string): Promise<Readable> {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises
       .access(fullPath, fs.constants.R_OK)
       .catch(catchError("getStreamFileStorageE1"));
@@ -75,18 +74,24 @@ export class FileStorage implements Storage {
   }
 
   async getBuffer(key: string): Promise<Buffer> {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     return fs.promises.readFile(fullPath);
   }
 
   async getUrl(key: string, _expires: number = Infinity): Promise<string> {
-    const fullPath = `${this.basePath}/${key}`;
+    return await (this.config.getUrl
+      ? this.config.getUrl(key)
+      : this.getFileUrl(key));
+  }
+
+  async getFileUrl(key: string): Promise<string> {
+    const fullPath = `${this.config.basePath}/${key}`;
     const urlPath = Url.pathToFileURL(fullPath);
     return urlPath.toString();
   }
 
   async delete(key: string) {
-    const fullPath = `${this.basePath}/${key}`;
+    const fullPath = `${this.config.basePath}/${key}`;
     await deletePath(fullPath).catch((e) => {
       if (e.code === "ENOENT") return;
       catchError("deleteFileStorageE2");
@@ -94,13 +99,13 @@ export class FileStorage implements Storage {
   }
 
   async listDir(keyPrefix: string, limit?: number) {
-    const fullPath = `${this.basePath}/${keyPrefix}`;
+    const fullPath = `${this.config.basePath}/${keyPrefix}`;
     const files = await fs.promises.readdir(fullPath).catch(() => []);
     return files.slice(0, limit);
   }
 
   async listAll(keyPrefix: string, limit?: number) {
-    const fullPath = `${this.basePath}/${keyPrefix}`;
+    const fullPath = `${this.config.basePath}/${keyPrefix}`;
     const files = await readdirRecursive(fullPath).catch(
       catchError("listAllFileStorageE1")
     );

@@ -7,5 +7,6 @@ import { z } from "zod";
 export const FileStorageConfig = z.object({
   basePath: z.string(),
   tmpPath: z.string(),
+  getUrl: z.function().args(z.string()).returns(z.string()).optional(),
 });
 export type FileStorageConfig = z.infer<typeof FileStorageConfig>;
