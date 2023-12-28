@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "build": "esbuild src/index.ts --platform=node --bundle --minify --outfile=build/index.js",
-    "install": "rimraf dist && tsc -p lib",
+    "prepare": "rimraf dist && tsc -p lib",
     "serve": "node build/index.js",
     "start": "nodemon src/index.ts",
     "test": "jest",
