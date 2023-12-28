@@ -20,6 +20,7 @@ import {
   DeleteBucketCommand,
 } from "@aws-sdk/client-s3";
 import { getBufferOfStream } from "./utils/getBufferOfStream.js";
+import { Access } from "./types/Access.js";
 
 export class S3Storage implements Storage {
   private s3;
@@ -45,12 +46,16 @@ export class S3Storage implements Storage {
   async putFilePath(
     key: string,
     filePath: string,
-    { access = "private" } = {}
+    { access = "private" }: { access?: Access } = {}
   ) {
     await this.putStream(key, fs.createReadStream(filePath), { access });
   }
 
-  async putStream(key: string, stream: Readable, { access = "private" } = {}) {
+  async putStream(
+    key: string,
+    stream: Readable,
+    { access = "private" }: { access?: Access } = {}
+  ) {
     await this.s3
       .send(
         new PutObjectCommand({
@@ -63,7 +68,11 @@ export class S3Storage implements Storage {
       .catch(catchError("putStreamS3StorageE1"));
   }
 
-  async putBuffer(key: string, buffer: Buffer, { access = "private" } = {}) {
+  async putBuffer(
+    key: string,
+    buffer: Buffer,
+    { access = "private" }: { access?: Access } = {}
+  ) {
     await this.s3
       .send(
         new PutObjectCommand({
@@ -103,12 +112,15 @@ export class S3Storage implements Storage {
 
   async getStream(key: string): Promise<Readable> {
     const fileName = await this.getFilePath(key);
-    return fs.createReadStream(fileName);
+    const stream = fs.createReadStream(fileName);
+    return stream.on("close", () => fs.promises.unlink(fileName));
   }
 
   async getBuffer(key: string): Promise<Buffer> {
     const fileName = await this.getFilePath(key);
-    return fs.promises.readFile(fileName);
+    const buffer = fs.promises.readFile(fileName);
+    await fs.promises.unlink(fileName);
+    return buffer;
   }
 
   async getUrl(key: string, _expires: number = Infinity): Promise<string> {
