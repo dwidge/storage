@@ -2,11 +2,13 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "checkJs": true,
-    "jsx": "react",
+    "declaration": true,
+    "declarationMap": true,
     "lib": ["ESNext"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
+    "sourceMap": true,
     "strict": true,
     "target": "ESNext"
   },
