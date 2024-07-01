@@ -7,6 +7,12 @@ import { z } from "zod";
 export const FileStorageConfig = z.object({
   basePath: z.string(),
   tmpPath: z.string(),
+  hashSecret: z.string().min(3).optional(),
   getUrl: z.function().args(z.string()).returns(z.string()).optional(),
+  putUrl: z
+    .function()
+    .args(z.string())
+    .returns(z.string().promise())
+    .optional(),
 });
 export type FileStorageConfig = z.infer<typeof FileStorageConfig>;

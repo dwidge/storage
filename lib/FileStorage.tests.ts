@@ -13,31 +13,28 @@ import {
 } from "./Storage.tests.js";
 import { FileStorage } from "./FileStorage.js";
 import { fileStorageEnv } from "./FileStorageEnv.js";
-
-import http from "http";
-import fs from "fs";
+import { MiniFileServer } from "./MiniFileServer.js";
+import { randPort, randSecret, randTmpPath } from "./randTmpPath.js";
 import path from "path";
 
-const testPort = 8088;
-const server = http.createServer((req, res) => {
-  const filepath = path.join(fileStorageEnv.basePath, req.url ?? "");
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      res.writeHead(404, { "Content-Type": "text/html" });
-      return res.end("404 Not Found");
-    }
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.write(data);
-    return res.end();
-  });
-});
-
 export async function testFileStorage() {
+  const metaPath = randTmpPath();
+  const hashSecret = randSecret();
+  const port = randPort();
+
   const instance: Storage = new FileStorage({
-    getUrl: (key) => `http://localhost:${testPort}/${key}`,
+    getUrl: (key) => `http://localhost:${port}/${key}`,
+    putUrl: async (key) => `http://localhost:${port}/${key}`,
+    hashSecret,
     ...fileStorageEnv,
   });
-  const s = server.listen(testPort);
+
+  const s = MiniFileServer(
+    fileStorageEnv.basePath,
+    metaPath,
+    fileStorageEnv.tmpPath,
+    hashSecret
+  ).listen(port);
   try {
     await testPutGetFilePath(instance);
     await testPutGetStream(instance);

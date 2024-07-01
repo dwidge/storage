@@ -18,12 +18,17 @@ import {
   ListObjectsCommand,
   BucketAlreadyExists,
   DeleteBucketCommand,
+  ChecksumAlgorithm,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getBufferOfStream } from "./utils/getBufferOfStream.js";
 import { Access } from "./types/Access.js";
+import z from "zod";
+import { PutOptions } from "./types/PutOptions.js";
+import { GetOptions } from "./types/GetOptions.js";
 
 export class S3Storage implements Storage {
-  private s3;
+  private s3: S3Client;
   private bucket: string;
   private tmpPath: string;
 
@@ -123,7 +128,7 @@ export class S3Storage implements Storage {
     return buffer;
   }
 
-  async getUrl(key: string, _expires: number = Infinity): Promise<string> {
+  async getUrl(key: string): Promise<string> {
     const options = this.s3.config;
     const endpoint = (await options.endpoint?.()) ?? {
       hostname: `s3.${await options.region()}.amazonaws.com`,
@@ -132,6 +137,44 @@ export class S3Storage implements Storage {
     };
     const bucketUrl = `${endpoint.protocol}//${endpoint.hostname}${endpoint.path}${this.bucket}`;
     return `${bucketUrl}/${key}`;
+  }
+
+  async getSignedUrl(key: string, options: GetOptions = {}): Promise<string> {
+    const { expires = 3600 } = GetOptions.parse(options);
+    const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
+    return getSignedUrl(this.s3, command, { expiresIn: expires });
+  }
+
+  async putSignedUrl(
+    key: string,
+    options: PutOptions
+  ): Promise<{ url: string; headers: Record<string, string> }> {
+    const {
+      size,
+      mime,
+      expires = 3600,
+      sha256,
+      access = "private",
+    } = PutOptions.parse(options);
+
+    const command = new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      ContentLength: size,
+      ChecksumSHA256: sha256
+        ? Buffer.from(sha256, "hex").toString("base64")
+        : undefined,
+      ChecksumAlgorithm: sha256 ? "SHA256" : undefined,
+      ContentType: mime,
+      ACL: access,
+    });
+
+    const url = await getSignedUrl(this.s3, command, {
+      expiresIn: expires,
+    });
+    const headers = { "x-amz-acl": access };
+
+    return { url, headers };
   }
 
   async delete(key: string) {

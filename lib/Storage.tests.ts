@@ -7,10 +7,13 @@
 import { Storage } from "./Storage.js";
 import { getStringOfStream } from "./utils/getStringOfStream.js";
 import makeId from "./utils/makeId.js";
-import { expect } from "@jest/globals";
+import { expect } from "expect";
 import fs from "fs";
 import axios from "axios";
 import { Readable } from "stream";
+import { catchAxios } from "./catchAxios.js";
+import { createHash } from "crypto";
+import { PutOptions } from "./types/PutOptions.js";
 
 const testKeyBase = "tmp/test";
 const testTmpDir = "tmp/setup";
@@ -79,21 +82,62 @@ export async function testPutGetUrl(instance: Storage) {
   await withTempDir(testTmpDir + "/" + makeId(), async (testTmpDir) => {
     const tmp = testKeyBase + "/testPutGetUrl" + makeId();
     try {
-      await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc");
+      const original = Buffer.from("abc");
+      const wrongSize = Buffer.from("abcd");
+      const wrongData = Buffer.from("abd");
+      const sha256 = createHash("sha256").update(original).digest("hex");
 
-      const original = fs.createReadStream(`${testTmpDir}/test.txt`);
-      await instance.putStream(`${tmp}/folder/c`, original, {
-        access: "public-read",
-      });
+      const putUrl = await instance.putSignedUrl(
+        `${tmp}/folder/c`,
+        PutOptions.parse({
+          access: "public-read",
+          size: 3,
+          mime: "text/css",
+          sha256,
+        })
+      );
+      expect(putUrl.url).toMatch("//");
+
+      await expect(axios.put(putUrl.url, wrongSize, putUrl)).rejects.toThrow();
+
+      // digital ocean does not check sum
+      if (0)
+        await expect(
+          axios.put(putUrl.url, wrongData, putUrl)
+        ).rejects.toThrow();
+
+      await expect(
+        axios.put(putUrl.url, original, putUrl)
+      ).resolves.toMatchObject({ status: 200 });
+
       expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
       expect(await instance.listAll(`${tmp}/`)).toEqual(["folder/c"]);
       expect(await instance.listDir(`${tmp}/`)).toEqual(["folder"]);
-      const url = await instance.getUrl(`${tmp}/folder/c`);
-      expect(url).toMatch("//");
-      const r = await axios.get(url).catch((e) => {
-        throw new Error("testPutGetUrlE1: " + e.message, { cause: e.url });
-      });
-      expect(r.data).toBe("abc");
+
+      const signedGetUrl = await instance.getSignedUrl(`${tmp}/folder/c`);
+      expect(signedGetUrl).toMatch("//");
+      const r3 = await axios
+        .get(signedGetUrl)
+        .catch(catchAxios("testPutGetUrl2"));
+      expect(original.equals(Buffer.from(r3.data))).toBeTruthy();
+
+      const publicUrl = await instance.getUrl(`${tmp}/folder/c`);
+      expect(publicUrl).toMatch("//");
+      const r2 = await axios.get(publicUrl).catch(catchAxios("testPutGetUrl3"));
+      expect(original.equals(Buffer.from(r2.data))).toBeTruthy();
+
+      const putUrlPrivate = await instance.putSignedUrl(
+        `${tmp}/folder/c`,
+        PutOptions.parse({
+          size: 3,
+          mime: "text/css",
+          sha256,
+        })
+      );
+      await expect(
+        axios.put(putUrlPrivate.url, original, putUrlPrivate)
+      ).resolves.toMatchObject({ status: 200 });
+      await expect(axios.get(publicUrl)).rejects.toThrow();
     } finally {
       await instance.delete(`${tmp}/folder/c`);
     }

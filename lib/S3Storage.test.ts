@@ -2,7 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 
-import { test } from "@jest/globals";
+import { test } from "node:test";
 import {
   testDeleteObjectS3Storage,
   testListObjectsS3Storage,
@@ -12,7 +12,7 @@ import {
   testPutGetUrlS3Storage,
 } from "./S3Storage.tests.js";
 
-test("testPutGetFilePathS3Storage", testPutGetFilePathS3Storage, 15000);
+test("testPutGetFilePathS3Storage", testPutGetFilePathS3Storage);
 test("testPutGetStreamS3Storage", testPutGetStreamS3Storage);
 test("testPutGetBufferS3Storage", testPutGetBufferS3Storage);
 test("testPutGetUrlS3Storage", testPutGetUrlS3Storage);

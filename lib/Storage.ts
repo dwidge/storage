@@ -4,6 +4,8 @@
 
 import { Readable } from "stream";
 import { Access } from "./types/Access.js";
+import { PutOptions } from "./types/PutOptions.js";
+import { GetOptions } from "./types/GetOptions.js";
 
 export interface Storage {
   putFilePath: (
@@ -21,10 +23,15 @@ export interface Storage {
     buffer: Buffer,
     options?: Partial<{ access: Access }>
   ) => Promise<void>;
+  putSignedUrl(
+    key: string,
+    options?: PutOptions
+  ): Promise<{ url: string; headers: Record<string, string> }>;
   getFilePath: (key: string) => Promise<string>;
   getStream: (key: string) => Promise<Readable>;
   getBuffer: (key: string) => Promise<Buffer>;
-  getUrl(key: string, expires?: number): Promise<string>;
+  getUrl(key: string): Promise<string>;
+  getSignedUrl(key: string, options?: GetOptions): Promise<string>;
   delete: (key: string) => Promise<void>;
   listDir: (keyPrefix: string, limit?: number) => Promise<string[]>;
   listAll: (keyPrefix: string, limit?: number) => Promise<string[]>;
