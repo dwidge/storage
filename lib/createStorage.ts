@@ -5,10 +5,7 @@
 import { Storage } from "./Storage.js";
 import { FileStorage } from "./FileStorage.js";
 import { S3Storage } from "./S3Storage.js";
-import { StorageConfig, StorageConfigInput } from "./StorageConfig.js";
+import { StorageConfigInput } from "./StorageConfig.js";
 
 export const createStorage = (config: StorageConfigInput): Storage =>
-  ({
-    s3: () => new S3Storage(config.s3!),
-    fs: () => new FileStorage(config.fs!),
-  }[StorageConfig.parse(config).type]());
+  config.type === "s3" ? new S3Storage(config.s3) : new FileStorage(config.fs);
