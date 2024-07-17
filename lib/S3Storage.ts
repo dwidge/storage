@@ -171,8 +171,9 @@ export class S3Storage implements Storage {
 
     const url = await getSignedUrl(this.s3, command, {
       expiresIn: expires,
+      signableHeaders: new Set(["x-amz-acl", "content-type"]),
     });
-    const headers = { "x-amz-acl": access };
+    const headers = { "x-amz-acl": access, "content-type": mime };
 
     return { url, headers };
   }
