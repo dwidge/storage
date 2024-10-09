@@ -5,7 +5,7 @@
 import { Readable } from "stream";
 
 export async function getBufferOfStream(stream: Readable) {
-  const buffers = [];
+  const buffers: Uint8Array[] = [];
 
   for await (const data of stream) {
     buffers.push(data);

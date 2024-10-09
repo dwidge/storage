@@ -2,6 +2,4 @@
 /build
 /dist
 /tmp
-/*lock*
-/*log*
 *.local
