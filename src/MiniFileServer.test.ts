@@ -2,11 +2,11 @@ import { after, describe, test } from "node:test";
 import assert from "assert";
 import fs from "fs";
 import axios from "axios";
-import { MiniFileServer } from "./MiniFileServer";
+import { MiniFileServer } from "./MiniFileServer.js";
 import path from "path";
 import { AxiosError } from "axios";
-import { randPort, randSecret, randTmpPath } from "./randTmpPath";
-import { catchAxios } from "./catchAxios";
+import { randPort, randSecret, randTmpPath } from "./randTmpPath.js";
+import { catchAxios } from "./catchAxios.js";
 
 describe("MiniFileServer", () => {
   const basePath = randTmpPath();
@@ -16,7 +16,7 @@ describe("MiniFileServer", () => {
     basePath,
     randTmpPath(),
     randTmpPath(),
-    hashSecret
+    hashSecret,
   );
 
   server.listen(port);

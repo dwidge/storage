@@ -3,18 +3,18 @@ import fs from "fs";
 import path from "path";
 import url from "url";
 import z, { ZodError } from "zod";
-import { PutOptions } from "./types/PutOptions";
-import { verifyHash } from "./verifyHash";
-import { randSecret } from "./randTmpPath";
-import { Access } from "./types/Access";
-import { hashStream } from "./hashStream";
-import { fromQueryString } from "./fromQueryString";
+import { PutOptions } from "./types/PutOptions.js";
+import { verifyHash } from "./verifyHash.js";
+import { randSecret } from "./randTmpPath.js";
+import { Access } from "./types/Access.js";
+import { hashStream } from "./hashStream.js";
+import { fromQueryString } from "./fromQueryString.js";
 
 export const MiniFileServer = (
   baseDir: string,
   metaDir: string,
   tmpDir: string,
-  hashSecret: string
+  hashSecret: string,
 ) =>
   http.createServer(async (req, res) => {
     const getTargetFilePath = (key: string, access: Access) =>
@@ -82,7 +82,7 @@ export const MiniFileServer = (
         const access = options.access || "private";
         const tmpFilepath = path.join(
           tmpDir,
-          `${filename}.${randSecret()}.tmp`
+          `${filename}.${randSecret()}.tmp`,
         );
 
         await fs.promises.mkdir(tmpDir, { recursive: true });
@@ -125,7 +125,7 @@ export const MiniFileServer = (
             });
             await fs.promises.writeFile(
               metaFilePath,
-              JSON.stringify(meta, null, 2)
+              JSON.stringify(meta, null, 2),
             );
 
             res.writeHead(200, { "Content-Type": "text/html" });
@@ -152,7 +152,7 @@ export const MiniFileServer = (
         res.end(
           e.issues
             .map((v) => "[" + v.path.join(".") + "] " + v.message)
-            .join("; ")
+            .join("; "),
         );
       } else {
         console.error(e);
