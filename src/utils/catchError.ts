@@ -3,5 +3,5 @@
 // https://www.boost.org/LICENSE_1_0.txt
 
 export const catchError = (code: string) => (cause: unknown) => {
-  throw new Error(code, { cause });
+  throw new Error(code + ": " + `${cause}`, { cause });
 };

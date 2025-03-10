@@ -18,6 +18,7 @@ import { PutOptions } from "./types/PutOptions.js";
 import { generateHash } from "./verifyHash.js";
 import { toStringValues } from "./toStringValues.js";
 import { randSecret } from "./randTmpPath.js";
+import assert from "assert";
 
 export class FileStorage implements Storage {
   private config: FileStorageConfig;
@@ -63,10 +64,13 @@ export class FileStorage implements Storage {
   }
 
   async getFilePath(key: string) {
+    assert(key, "getFilePathE5");
+
     const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises
       .access(fullPath, fs.constants.F_OK)
       .catch(catchError("getFilePathFileStorageE1"));
+
     return fullPath;
   }
 

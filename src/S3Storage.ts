@@ -18,14 +18,13 @@ import {
   ListObjectsCommand,
   BucketAlreadyExists,
   DeleteBucketCommand,
-  ChecksumAlgorithm,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getBufferOfStream } from "./utils/getBufferOfStream.js";
 import { Access } from "./types/Access.js";
-import z from "zod";
 import { PutOptions } from "./types/PutOptions.js";
 import { GetOptions } from "./types/GetOptions.js";
+import assert from "assert";
 
 export class S3Storage implements Storage {
   private s3: S3Client;
@@ -91,6 +90,8 @@ export class S3Storage implements Storage {
   }
 
   async getFilePath(key: string) {
+    assert(key, "getFilePathE5");
+
     const { Body } = await this.s3
       .send(
         new GetObjectCommand({
@@ -107,7 +108,7 @@ export class S3Storage implements Storage {
 
     await fs.promises
       .mkdir(directoryPath, { recursive: true })
-      .catch(catchError("getFilePathS3StorageE3"));
+      .catch(catchError("getFilePathS3StorageE3: " + key + ", " + filePath));
 
     if (Body instanceof Readable) await writeReadableToFile(Body, filePath);
     else throw new Error("getFilePathS3StorageE4");
