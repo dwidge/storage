@@ -9,6 +9,7 @@ const {
   STORAGE_S3_KEY_SECRET = "",
   STORAGE_S3_ENDPOINT = "",
   STORAGE_S3_TMP_PATH = "tmp",
+  STORAGE_S3_ENABLE_VERSIONING = "",
 } = process.env;
 
 export const s3StorageEnv = {
@@ -18,4 +19,10 @@ export const s3StorageEnv = {
   secretAccessKey: STORAGE_S3_KEY_SECRET,
   endpoint: STORAGE_S3_ENDPOINT,
   tmpPath: STORAGE_S3_TMP_PATH,
+  enableVersioning:
+    STORAGE_S3_ENABLE_VERSIONING === "true"
+      ? true
+      : STORAGE_S3_ENABLE_VERSIONING === "false"
+        ? false
+        : undefined,
 };

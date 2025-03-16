@@ -25,6 +25,7 @@ import { Access } from "./types/Access.js";
 import { PutOptions } from "./types/PutOptions.js";
 import { GetOptions } from "./types/GetOptions.js";
 import assert from "assert";
+import { enableBucketVersioning } from "./S3Version.js";
 
 export class S3Storage implements Storage {
   private s3: S3Client;
@@ -32,8 +33,15 @@ export class S3Storage implements Storage {
   private tmpPath: string;
 
   constructor(config: S3StorageConfig) {
-    const { bucket, region, accessKeyId, secretAccessKey, endpoint, tmpPath } =
-      S3StorageConfig.parse(config);
+    const {
+      bucket,
+      region,
+      accessKeyId,
+      secretAccessKey,
+      endpoint,
+      tmpPath,
+      enableVersioning,
+    } = S3StorageConfig.parse(config);
     this.s3 = new S3Client({
       region,
       credentials: {
@@ -45,6 +53,9 @@ export class S3Storage implements Storage {
     });
     this.bucket = bucket;
     this.tmpPath = tmpPath;
+
+    if (enableVersioning !== undefined)
+      enableBucketVersioning(this.s3, this.bucket, enableVersioning);
   }
 
   async putFilePath(

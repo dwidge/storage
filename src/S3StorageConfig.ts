@@ -12,5 +12,6 @@ export const S3StorageConfig = z.object({
   secretAccessKey: z.string().nonempty(),
   endpoint: z.string().nonempty(),
   tmpPath: z.string().nonempty(),
+  enableVersioning: z.boolean().optional(),
 });
 export type S3StorageConfig = z.infer<typeof S3StorageConfig>;
