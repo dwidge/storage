@@ -12,7 +12,7 @@ export async function readdirRecursive(dir: string): Promise<string[]> {
   for (const file of dirs) {
     const subs: string[] = file.isDirectory()
       ? (await readdirRecursive(dir + "/" + file.name)).map(
-          (s) => file.name + "/" + s
+          (s) => file.name + "/" + s,
         )
       : [file.name];
     acc.splice(-1, 0, ...subs);

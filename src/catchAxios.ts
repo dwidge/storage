@@ -11,7 +11,7 @@ export const catchAxios = (code: string) => (cause: unknown) => {
           data: cause.response?.data,
           headers: cause.config?.headers,
         },
-      }
+      },
     );
   } else throw cause;
 };

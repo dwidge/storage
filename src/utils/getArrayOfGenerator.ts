@@ -4,7 +4,7 @@
 
 export const getArrayOfGenerator = async <T>(
   generator: AsyncGenerator<T, void, void>,
-  limit: number = Infinity
+  limit: number = Infinity,
 ) => {
   const array: T[] = [];
   for await (const value of generator) {

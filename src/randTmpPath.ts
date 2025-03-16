@@ -5,7 +5,7 @@ export const randTmpPath = () => {
   const basePath = path.join(
     __dirname,
     "tmp/MiniFileServer",
-    Math.random().toFixed(5).slice(2)
+    Math.random().toFixed(5).slice(2),
   );
   if (!fs.existsSync(basePath)) fs.mkdirSync(basePath, { recursive: true });
   return basePath;

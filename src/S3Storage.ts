@@ -50,7 +50,7 @@ export class S3Storage implements Storage {
   async putFilePath(
     key: string,
     filePath: string,
-    { access = "private" }: { access?: Access } = {}
+    { access = "private" }: { access?: Access } = {},
   ) {
     await this.putStream(key, fs.createReadStream(filePath), { access });
   }
@@ -58,7 +58,7 @@ export class S3Storage implements Storage {
   async putStream(
     key: string,
     stream: Readable,
-    { access = "private" }: { access?: Access } = {}
+    { access = "private" }: { access?: Access } = {},
   ) {
     await this.s3
       .send(
@@ -67,7 +67,7 @@ export class S3Storage implements Storage {
           Key: key,
           Body: await getBufferOfStream(stream),
           ACL: access,
-        })
+        }),
       )
       .catch(catchError("putStreamS3StorageE1"));
   }
@@ -75,7 +75,7 @@ export class S3Storage implements Storage {
   async putBuffer(
     key: string,
     buffer: Buffer,
-    { access = "private" }: { access?: Access } = {}
+    { access = "private" }: { access?: Access } = {},
   ) {
     await this.s3
       .send(
@@ -84,7 +84,7 @@ export class S3Storage implements Storage {
           Key: key,
           Body: buffer,
           ACL: access,
-        })
+        }),
       )
       .catch(catchError("putBufferS3StorageE1"));
   }
@@ -97,7 +97,7 @@ export class S3Storage implements Storage {
         new GetObjectCommand({
           Bucket: this.bucket,
           Key: key,
-        })
+        }),
       )
       .catch(catchError("getFilePathS3StorageE1"));
 
@@ -148,7 +148,7 @@ export class S3Storage implements Storage {
 
   async putSignedUrl(
     key: string,
-    options: PutOptions
+    options: PutOptions,
   ): Promise<{ url: string; headers: Record<string, string> }> {
     const {
       size,
@@ -185,7 +185,7 @@ export class S3Storage implements Storage {
         new DeleteObjectCommand({
           Bucket: this.bucket,
           Key: key,
-        })
+        }),
       )
       .catch(catchError("deleteS3StorageE1"));
   }
@@ -236,7 +236,7 @@ export class S3Storage implements Storage {
       .send(
         new CreateBucketCommand({
           Bucket: this.bucket,
-        })
+        }),
       )
       .catch((e) => {
         if (e instanceof BucketAlreadyExists) return;
@@ -253,7 +253,7 @@ export class S3Storage implements Storage {
 
 const writeReadableToFile = (
   stream: Readable,
-  filePath: string
+  filePath: string,
 ): Promise<void> =>
   new Promise((resolve, reject) => {
     stream

@@ -11,21 +11,21 @@ export interface Storage {
   putFilePath: (
     key: string,
     filePath: string,
-    options?: Partial<{ access: Access }>
+    options?: Partial<{ access: Access }>,
   ) => Promise<void>;
   putStream: (
     key: string,
     stream: Readable,
-    options?: Partial<{ access: Access }>
+    options?: Partial<{ access: Access }>,
   ) => Promise<void>;
   putBuffer: (
     key: string,
     buffer: Buffer,
-    options?: Partial<{ access: Access }>
+    options?: Partial<{ access: Access }>,
   ) => Promise<void>;
   putSignedUrl(
     key: string,
-    options?: PutOptions
+    options?: PutOptions,
   ): Promise<{ url: string; headers: Record<string, string> }>;
   getFilePath: (key: string) => Promise<string>;
   getStream: (key: string) => Promise<Readable>;

@@ -1,6 +1,6 @@
 export const toStringValues = (
-  r: Record<string, string | number | boolean | null | undefined>
+  r: Record<string, string | number | boolean | null | undefined>,
 ) =>
   Object.fromEntries(
-    Object.entries(r).map(([k, v]) => [k, v?.toString() ?? ""])
+    Object.entries(r).map(([k, v]) => [k, v?.toString() ?? ""]),
   );

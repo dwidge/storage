@@ -33,7 +33,7 @@ export async function testFileStorage() {
     fileStorageEnv.basePath,
     metaPath,
     fileStorageEnv.tmpPath,
-    hashSecret
+    hashSecret,
   ).listen(port);
   try {
     await testPutGetFilePath(instance);

@@ -48,7 +48,7 @@ export class FileStorage implements Storage {
     return new Promise<void>((resolve, reject) => {
       writeStream.on("finish", () => resolve());
       writeStream.on("error", (cause: unknown) =>
-        reject(new Error("putStreamFileStorageE2", { cause }))
+        reject(new Error("putStreamFileStorageE2", { cause })),
       );
     });
   }
@@ -100,7 +100,7 @@ export class FileStorage implements Storage {
 
   async putSignedUrl(
     key: string,
-    options: PutOptions
+    options: PutOptions,
   ): Promise<{ url: string; headers: Record<string, string> }> {
     if (!this.config.hashSecret)
       throw new Error("putSignedUrl1: Missing hashSecret");
@@ -114,7 +114,7 @@ export class FileStorage implements Storage {
       salt,
     });
     const query = new URLSearchParams(
-      toStringValues({ ...options, hash, salt })
+      toStringValues({ ...options, hash, salt }),
     );
     const url = path + "?" + query.toString();
     const headers = {};
@@ -144,7 +144,7 @@ export class FileStorage implements Storage {
   async listAll(keyPrefix: string, limit?: number) {
     const fullPath = `${this.config.basePath}/${keyPrefix}`;
     const files = await readdirRecursive(fullPath).catch(
-      catchError("listAllFileStorageE1")
+      catchError("listAllFileStorageE1"),
     );
     return files.slice(0, limit);
   }

@@ -94,7 +94,7 @@ export async function testPutGetUrl(instance: Storage) {
           size: 3,
           mime: "text/css",
           sha256,
-        })
+        }),
       );
       expect(putUrl.url).toMatch("//");
 
@@ -103,11 +103,11 @@ export async function testPutGetUrl(instance: Storage) {
       // digital ocean does not check sum
       if (0)
         await expect(
-          axios.put(putUrl.url, wrongData, putUrl)
+          axios.put(putUrl.url, wrongData, putUrl),
         ).rejects.toThrow();
 
       await expect(
-        axios.put(putUrl.url, original, putUrl)
+        axios.put(putUrl.url, original, putUrl),
       ).resolves.toMatchObject({ status: 200 });
 
       expect((await instance.listAll("", 10)).length).toBeGreaterThan(0);
@@ -132,10 +132,10 @@ export async function testPutGetUrl(instance: Storage) {
           size: 3,
           mime: "text/css",
           sha256,
-        })
+        }),
       );
       await expect(
-        axios.put(putUrlPrivate.url, original, putUrlPrivate)
+        axios.put(putUrlPrivate.url, original, putUrlPrivate),
       ).resolves.toMatchObject({ status: 200 });
       await expect(axios.get(publicUrl)).rejects.toThrow();
     } finally {
@@ -151,13 +151,13 @@ export async function testDeleteObject(instance: Storage) {
       await fs.promises.writeFile(`${testTmpDir}/test.txt`, "abc");
       await instance.putStream(
         `${tmp}/folder/c`,
-        fs.createReadStream(`${testTmpDir}/test.txt`)
+        fs.createReadStream(`${testTmpDir}/test.txt`),
       );
       await instance.delete(`${tmp}/folder/c`);
       expect(await instance.listAll(`${tmp}/`)).toEqual([]);
       expect(await instance.listDir(`${tmp}/`)).toEqual([]);
       await expect(instance.getStream(`${tmp}/folder/c`)).rejects.toThrow(
-        Error
+        Error,
       );
     } finally {
       await instance.delete(`${tmp}/folder/c`);
