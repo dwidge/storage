@@ -5,6 +5,7 @@
 export * from "./bucket.js";
 export * from "./createStorage.js";
 export * from "./FileStorage.js";
+export * from "./fs.js";
 export * from "./S3Storage.js";
 export * from "./Storage.js";
 export * from "./StorageConfig.js";
