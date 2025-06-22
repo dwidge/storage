@@ -28,6 +28,18 @@ export class FileStorage implements Storage {
     fs.promises.mkdir(this.config.basePath, { recursive: true });
   }
 
+  toJSON() {
+    const { hashSecret, ...serializable } = this.config;
+    return {
+      hashSecret: hashSecret ? "*".repeat(hashSecret.length) : hashSecret,
+      ...serializable,
+    };
+  }
+
+  toString() {
+    return JSON.stringify(this.toJSON());
+  }
+
   async putFilePath(key: string, filePath: string) {
     const fullPath = `${this.config.basePath}/${key}`;
     await fs.promises

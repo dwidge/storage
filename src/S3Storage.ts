@@ -58,6 +58,17 @@ export class S3Storage implements Storage {
       enableBucketVersioning(this.s3, this.bucket, enableVersioning);
   }
 
+  toJSON() {
+    return {
+      bucket: this.bucket,
+      tmpPath: this.tmpPath,
+    };
+  }
+
+  toString() {
+    return JSON.stringify(this.toJSON());
+  }
+
   async putFilePath(
     key: string,
     filePath: string,
